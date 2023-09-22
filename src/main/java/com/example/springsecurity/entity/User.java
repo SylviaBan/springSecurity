@@ -19,9 +19,10 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique=true)
     private String username;
     private String password;
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     /*@JoinTable(name = "spring-security",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))*/
@@ -67,6 +68,13 @@ public class User implements UserDetails {
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles
+                .stream()
+                .map(role -> new SimpleGrantedAuthority((role.getName())))
+                .toList();
+    }
+    /*@Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         // boucler sur la liste de rôles
         // dans la boucle, créer une liste contenant plusieurs SimpleGrantedAuth grâce au nom du role
         // Ajouter ce simplegrantedAuth dans une liste
@@ -79,7 +87,7 @@ public class User implements UserDetails {
             authorities.add(authority);
         }
         return authorities;
-    }
+    }*/
 
 
 

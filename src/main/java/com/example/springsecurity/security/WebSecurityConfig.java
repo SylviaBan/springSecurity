@@ -1,8 +1,11 @@
-package com.example.springsecurity.controller;
+package com.example.springsecurity.security;
 
+import com.example.springsecurity.security.AuthJwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
@@ -16,6 +19,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity // Activation de la config personnalisée de la sécurité
 public class WebSecurityConfig {
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     // Initialisation d'une instance de Bcrypt pour hacher les mots de passe
     // à réutiliser avec Autowire
@@ -52,6 +60,7 @@ public class WebSecurityConfig {
             requests
                     // Toutes les requetes HTTP / api/users sint autorisées partout pour tout le monde (authentifié ou pas)
                     .requestMatchers("/api/users").permitAll()
+                    .requestMatchers("/api/auth/**").permitAll()
                     // toutes les autres requêtes HTTP nécessitent une authentification
                     .anyRequest().authenticated();
         });
@@ -73,7 +82,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-     AuthJwtTokenFilter authenticationJwtTokenFilter() {
+    AuthJwtTokenFilter authenticationJwtTokenFilter() {
         return new AuthJwtTokenFilter();
     }
 }

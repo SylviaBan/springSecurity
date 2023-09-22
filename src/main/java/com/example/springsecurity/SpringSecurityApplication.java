@@ -21,6 +21,7 @@ public class SpringSecurityApplication {
 
     @Autowired
     private UserRepository userRepo;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Bean
